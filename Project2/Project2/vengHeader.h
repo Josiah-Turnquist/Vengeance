@@ -1,5 +1,5 @@
-#ifndef RPG_H
-#define RPG_H
+#ifndef VENGHEADER_H
+#define VENGHEADER_H
 
 #include <iostream>
 #include <string>
