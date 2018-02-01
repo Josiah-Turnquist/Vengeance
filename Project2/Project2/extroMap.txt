@@ -1,0 +1,34 @@
+0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0
+1 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+2 G 9 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+3 G G B G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+4 G G G C G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+5 G G G G D G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+6 G G G G G E G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+7 G G G G G G F G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+8 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+9 G G G G G G G G H G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+0 G G G G G G G G G I G G G G ° G G G G G G G G G G G G G G G G G G G G G G G G G G W R W E D O I N G
+1 G G G G G G G G G G J G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+2 @ G G G G G G G G G G K G G G G G G G G G G ° ° ° G G G G G G G G G G G G G G G G
+3 @ G G G G G G G G G G G L G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+4 @ G G G G G G G G G G G G 0 G G G G G G G G G G G G G G G G G G G G G G G G G G G
+5 G G G G G G G G ° G G G G G N G G G G G G G G G G G G G G G G G G G G G G G G G G
+6 G G G G G G G G G G G G G G G O G G G G G G G G G G G G G G G G G G G G G G G G G
+7 G G G G G G G G G G G G G G G G P G G G G G G G G G G G G G G G G G G G G G G G G
+8 G G G G G G G G G G G G G G G G G Q G G G G G G G G G G G G G G G G G G G G G G G
+9 G G G G G G G G G G G G G G G G G G R G G G G G G G G G G G G G G G G G G G G G G
+0 G G G G G G G G G G G G G G G G G G G S G G G G G G G G G G G G G G G G G G G G G
+1 G G G G G G G G G G G G G G G G G G G G T G G G G G G G G G G G G G G G G G G G G
+2 G G G G G G G G G G G G G G G G G G G G G U G G G G G G G G G G G G G G G G G G G
+3 G G G G G G G G G G G G G G G G G G G G G G V G G G G G G G G G G G G G G G G G G
+4 G G G G G G G G G G G G G G G G G G G G G G G W G G G G G G G G G G G G G G G G G
+5 G G G G G G G G G G G G G G G G G G G G G G G G 0 G G G G G G G G G G G G G G G G
+6 G G G G G G G G G G G G G G G G G G G G G G G G G Y G G G G G G G G G G G G G G G
+7 G G G G G G G G G G G G G G G G G G G G G G G G G G Z G G G G G G G G G G G G G G
+8 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+9 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+0 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+1 G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G G
+
+N E G T L I N E
