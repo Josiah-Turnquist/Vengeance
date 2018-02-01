@@ -15,15 +15,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Documents\GitHub\Ennui\main1.cpp">
+    <ClCompile Include="main1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Documents\GitHub\Ennui\rpg1.cpp">
+    <ClCompile Include="rpg1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Documents\GitHub\Ennui\rpg.h">
+    <ClInclude Include="rpg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

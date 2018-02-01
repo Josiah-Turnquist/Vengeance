@@ -110,11 +110,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Documents\GitHub\Ennui\main1.cpp" />
-    <ClCompile Include="..\..\..\..\..\Documents\GitHub\Ennui\rpg1.cpp" />
+    <ClCompile Include="main1.cpp" />
+    <ClCompile Include="rpg1.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Documents\GitHub\Ennui\rpg.h" />
+    <ClInclude Include="rpg.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
