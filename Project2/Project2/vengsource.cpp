@@ -15,10 +15,6 @@
 
 using namespace std;
 
-// Test comment
-
-// Test 2 comment, I think I understsand how it works now!
-
 #include "vengHeader.h"
 
 HANDLE consoleCPP = GetStdHandle(STD_OUTPUT_HANDLE); // For use of SetConsoleTextAttribute() - Sets console to default. (aka sets canvas to command prompt)
