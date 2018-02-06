@@ -534,6 +534,23 @@ void Dialogue::Addline(string text, bool newLine) {
 	Print();
 }
 
+void Dialogue::AddlineSlow(string text, bool newLine, int delay) {
+
+	if (newLine == true) {
+		Addline("", true);
+	}
+
+	string tempStr = "";
+
+	for (int i = 0; i < text.length(); ++i) {
+		Sleep(delay);
+		tempStr = text.at(i);
+		Addline(tempStr, false);
+	}
+
+	return;
+}
+
 void Dialogue::Print() { // Color true/false
 	MoveCursorCPP(this->dX1, this->dY1);
 	for (int yyy = 0; yyy < this->maxLines; ++yyy) {

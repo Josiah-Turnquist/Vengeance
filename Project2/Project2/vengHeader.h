@@ -21,6 +21,7 @@ class Dialogue {
 public:
 	Dialogue(int xx1 = 3, int yy1 = 28, int xx2 = 49, int yy2 = 39);
 	void Addline(string text, bool newLine = true);
+	void AddlineSlow(string text, bool newLine = true, int delay = 20);
 	void Print();
 private:
 	int dX1;

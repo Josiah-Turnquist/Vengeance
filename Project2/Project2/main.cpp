@@ -29,6 +29,7 @@ void PrintInfoDay(Player& pl);
 void ClearConsole(int, int, int, int);
 void Teleport(Player&, Map&, Dialogue&);
 void npcInteraction(string, Player&, Inventory&, Map&, Dialogue&);
+void AddlineSlow(string, bool, Dialogue&);
 HWND consoleWin = GetConsoleWindow();
 
 
@@ -50,6 +51,8 @@ char const RUIN = 'R';
 char const BUSH = 'B';
 int const WORLDFIGHTCHANCE = 400;
 int const WILDFIGHTCHANCE = 100;
+int const DIALOGUEDELAYTIME = 500;
+int const KEYISPRESSED = 0x8000;
 
 int main() {
 	string gameStatus = "MENU";
@@ -83,6 +86,8 @@ int main() {
 	int menuInput;
 	string tempStr;
 
+	MoveCursor(0, 0);
+
 	PrintGUI(windowWidth, windowHeight, infoWidth, dialogueHeight, hudGap);
 	Dialogue dialogue(3, 28, windowWidth + hudGap + infoWidth, 39);
 	Player player;
@@ -91,19 +96,19 @@ int main() {
 	inventory.Add("Jewel", "Valuable", 25);
 	inventory.Add("Food", "Food", 2, 0, 0, 10);
 	dialogue.Addline("Welcome to Vengeance.");
+	Sleep(100);
 	dialogue.Addline("Push [P] to play");
 	dialogue.Addline("Push [C] to continue (coming soon!)");
 	dialogue.Addline("Push [Q] to quit");
-
 	srand(time(0)); // RANDOM SEED
 
 	while (true) {
 		MoveCursor(0, 0);
 
-
 		while (gameStatus == "MENU") {
 			MoveCursor(0, 0);
 			menuInput = Menu(3, 4, (windowWidth - 1), (windowHeight - 1), true); // Draw menu as well as recieve input.
+			
 			switch (menuInput) {
 			case -1:
 				break;
@@ -120,28 +125,29 @@ int main() {
 		}
 
 
-		dialogue.Addline("You used to live in a small remote village, with small cottages littered sparingly");
-		dialogue.Addline("between neighbors. ");
-		Sleep(3600);
-		dialogue.Addline("It wasn't a great life, but it was a peaceful and fullfilling life, and one that you");
-		dialogue.Addline("enjoyed.");
-		Sleep(3600);
-		dialogue.Addline("You wished you could keep this life, but Fate had other plans in store for you, and grimones.");
-		Sleep(3600);
-		dialogue.Addline("One sunny peaceful day, a demon lord appeared.");
-		Sleep(2800);
-		dialogue.Addline("Your life was over in the blink of an eye, and everything you ever knew, everything you ever");
-		dialogue.Addline("loved, was gone, never to be seen again.");
-		Sleep(3600);
+		dialogue.AddlineSlow("You used to live in a small remote village, with small cottages littered sparingly");
+		dialogue.AddlineSlow("between neighbors. ");
+		Sleep(DIALOGUEDELAYTIME);
+		dialogue.AddlineSlow("It wasn't a great life, but it was a peaceful and fullfilling life, and one that you");
+		dialogue.AddlineSlow("enjoyed.");
+		Sleep(DIALOGUEDELAYTIME);
+		dialogue.AddlineSlow("You wished you could keep this life, but fate had other plans in store for you, and grimones.");
+		Sleep(DIALOGUEDELAYTIME);
+		dialogue.AddlineSlow("One sunny peaceful day, a demon lord appeared.");
+		Sleep(DIALOGUEDELAYTIME);
+		dialogue.AddlineSlow("Your life was over in the blink of an eye, and everything you ever knew, everything you ever ");
+		dialogue.AddlineSlow("loved, was gone, never to be seen again.", false);
+		Sleep(DIALOGUEDELAYTIME);
 		dialogue.Addline("");
-		dialogue.Addline("You are the lone survivor.");
-		Sleep(1800);
+		dialogue.AddlineSlow("You are the lone survivor.");
+		Sleep(DIALOGUEDELAYTIME);
 		dialogue.Addline("");
-		dialogue.Addline("This is your quest for Vengeance.");
+		dialogue.AddlineSlow("This is your quest for Vengeance.");
 
-		Sleep(600);
+		Sleep(DIALOGUEDELAYTIME);
 
 		dialogue.Addline("(*) Push [H] for help.");
+		dialogue.Addline("");
 
 		PrintInfo("Stats", player, inventory);
 		string infoSet = "Statistics";
@@ -192,17 +198,17 @@ int main() {
 					}
 				}
 				else if (cMap == 4) { // Wilderness
-					enemy.Init("animal", (50 - py) / 5);
+					enemy.Init("animal", player.GetLevel() + ((50 - py) / 5)); // Animal level scales with depth into wilderness and player's level.
 				}
 
 				if (enemy.GetName() == "bandit") {
-					dialogue.Addline("Out of nowhere, a person jumps in your way!");
-					dialogue.Addline("You've been attacked by a bandit!");
-					dialogue.Addline("He's wielding a cutlass. If you're not careful, it can do some damage!");
+					dialogue.Addline("A person quickly jumps down from a nearby tree.");
+					dialogue.Addline("You're being attacked by a bandit!");
+					dialogue.Addline("He's wielding a cutlass. Be careful! He looks dangerous.");
 				}
 				else if (enemy.GetName() == "cult-member") {
 					dialogue.Addline("From a nearby bush, a hidden figure reveals itself and blocks your path!");
-					dialogue.Addline("You've been attacked by a crazy cult-member!");
+					dialogue.Addline("You're being attacked by a crazy cult-member!");
 					dialogue.Addline("Sharp nails and teeth and...naked. Seems to be a close combat fighter. Keep your");
 					dialogue.Addline("distance.");
 					dialogue.Addline("Mostly for the nudity.");
@@ -211,7 +217,7 @@ int main() {
 					dialogue.Addline("You've been attacked by a wild " + enemy.GetName() + "!");
 				}
 				else {
-					dialogue.Addline("Error: enemy-error. Undefined enemy.");
+					dialogue.Addline("Error - enemy-related: Likely undefined enemy.");
 				}
 				while (inBattle == true) { // Bandit, animals, cult-member.
 					Sleep(125);
@@ -243,8 +249,8 @@ int main() {
 							tempInt = inventory.Find("Food");
 							if (tempInt > 0) {
 								inventory.Delete("Food");
-								dialogue.Addline("You eat food. (+10 health)");
-								player.AddHealth(10);
+								dialogue.Addline("You eat food. (+20 health)");
+								player.AddHealth(20);
 							}
 						}
 					}
@@ -258,7 +264,9 @@ int main() {
 							dialogue.Addline("You attempt to run away...");
 						}
 					}
-					enemy.TakeTurn(player, dialogue);
+					if (inBattle == true) {
+						enemy.TakeTurn(player, dialogue); // Make sure player hasn't run away beforehand.
+					}
 				}
 				PrintInfo(infoSet, player, inventory);
 				player.PrintExperience();
@@ -526,15 +534,15 @@ int main() {
 				dialogue.Addline("[Q]uit");
 			}
 			else if (keyPressed == 'Q') { // Quit
-				dialogue.Addline("The game may not be saved. Are you sure you want to quit? ", 15);
+				dialogue.Addline("The game may not be saved. Are you sure you want to quit? ", true);
 				Sleep(25);
 				dialogue.Addline("Enter:  [Y / N] ");
 				keyPressed = false;
 				while (keyPressed == false) {
-					if (GetKeyState('Y') & 0x8000) {
+					if (GetKeyState('Y') & KEYISPRESSED) {
 						return 0;
 					}
-					else if (GetKeyState('N') & 0x8000) {
+					else if (GetKeyState('N') & KEYISPRESSED) {
 						keyPressed = true; // Do nothing.
 						dialogue.Addline("OK. ");
 					}
@@ -570,63 +578,72 @@ bool CheckYesNo(char key1, char key2) {
 	int tempInt = -1;
 
 	while (tempInt == -1) {
-		if (GetKeyState(key1) & 0x8000) {
-			tempInt = true;
+		if (GetKeyState(key1) & KEYISPRESSED) {
+			tempInt = 1;
 		}
-		else if (GetKeyState(key2) & 0x8000) {
-			tempInt = false;
+		else if (GetKeyState(key2) & KEYISPRESSED) {
+			tempInt = 0;
 		}
 	}
-	return tempInt;
+
+	bool tempBool = false;
+	if (tempInt == 1) {
+		tempBool = true;
+	}
+	else if (tempInt == 0) {
+		tempBool = false;
+	}
+
+	return tempBool;
 }
 
 char CheckKeyPressed() {
 	char tempChar = '~';
 	bool keyPressed = false;
 	while (keyPressed == false) {
-		if (GetKeyState('I') & 0x8000) {
+		if (GetKeyState('I') & KEYISPRESSED) {
 			tempChar = 'I';
 		}
-		else if (GetKeyState('S') & 0x8000) {
+		else if (GetKeyState('S') & KEYISPRESSED) {
 			tempChar = 'S';
 		}
-		else if (GetKeyState(VK_UP) & 0x8000) {
+		else if (GetKeyState(VK_UP) & KEYISPRESSED) {
 			tempChar = '^'; // North
 		}
-		else if (GetKeyState(VK_DOWN) & 0x8000) {
+		else if (GetKeyState(VK_DOWN) & KEYISPRESSED) {
 			tempChar = '\\';
 		}
-		else if (GetKeyState(VK_LEFT) & 0x8000) {
+		else if (GetKeyState(VK_LEFT) & KEYISPRESSED) {
 			tempChar = '<';
 		}
-		else if (GetKeyState(VK_RIGHT) & 0x8000) {
+		else if (GetKeyState(VK_RIGHT) & KEYISPRESSED) {
 			tempChar = '>';
 		}
-		else if (GetKeyState('A') & 0x8000) {
+		else if (GetKeyState('A') & KEYISPRESSED) {
 			tempChar = 'A';
 		}
-		else if (GetKeyState('D') & 0x8000) {
+		else if (GetKeyState('D') & KEYISPRESSED) {
 			tempChar = 'D';
 		}
-		else if (GetKeyState('E') & 0x8000) {
+		else if (GetKeyState('E') & KEYISPRESSED) {
 			tempChar = 'E';
 		}
-		else if (GetKeyState('F') & 0x8000) {
+		else if (GetKeyState('F') & KEYISPRESSED) {
 			tempChar = 'F';
 		}
-		else if (GetKeyState('Q') & 0x8000) {
+		else if (GetKeyState('Q') & KEYISPRESSED) {
 			tempChar = 'Q';
 		}
-		else if (GetKeyState('W') & 0x8000) {
+		else if (GetKeyState('W') & KEYISPRESSED) {
 			tempChar = 'W';
 		}
-		else if (GetKeyState('P') & 0x8000) {
+		else if (GetKeyState('P') & KEYISPRESSED) {
 			tempChar = 'P';
 		}
-		else if (GetKeyState('C') & 0x8000) {
+		else if (GetKeyState('C') & KEYISPRESSED) {
 			tempChar = 'C';
 		}
-		else if (GetKeyState('H') & 0x8000) {
+		else if (GetKeyState('H') & KEYISPRESSED) {
 			tempChar = 'H';
 		}
 		if (tempChar != '~') {
@@ -641,34 +658,34 @@ int CheckNumPressed() {
 	int tempInt = '~';
 	bool keyPressed = false;
 	while (keyPressed == false) {
-		if (GetKeyState('1') & 0x8000) {
+		if (GetKeyState('1') & KEYISPRESSED) {
 			return 0;
 		}
-		else if (GetKeyState('2') & 0x8000) {
+		else if (GetKeyState('2') & KEYISPRESSED) {
 			tempInt = 1;
 		}
-		else if (GetKeyState('3') & 0x8000) {
+		else if (GetKeyState('3') & KEYISPRESSED) {
 			tempInt = 2;
 		}
-		else if (GetKeyState('4') & 0x8000) {
+		else if (GetKeyState('4') & KEYISPRESSED) {
 			tempInt = 3;
 		}
-		else if (GetKeyState('5') & 0x8000) {
+		else if (GetKeyState('5') & KEYISPRESSED) {
 			tempInt = 4;
 		}
-		else if (GetKeyState('6') & 0x8000) {
+		else if (GetKeyState('6') & KEYISPRESSED) {
 			tempInt = 5;
 		}
-		else if (GetKeyState('7') & 0x8000) {
+		else if (GetKeyState('7') & KEYISPRESSED) {
 			tempInt = 6;
 		}
-		else if (GetKeyState('8') & 0x8000) {
+		else if (GetKeyState('8') & KEYISPRESSED) {
 			tempInt = 7;
 		}
-		else if (GetKeyState('9') & 0x8000) {
+		else if (GetKeyState('9') & KEYISPRESSED) {
 			tempInt = 8;
 		}
-		else if (GetKeyState('0') & 0x8000) {
+		else if (GetKeyState('0') & KEYISPRESSED) {
 			tempInt = -1;
 		}
 		if (tempInt != '~') {
@@ -910,41 +927,43 @@ void npcInteraction(string name, Player& player, Inventory& inventory, Map& worl
 			int progress = player.GetBlacksmith();
 			player.SetBlacksmith(0);
 			if (progress == 0) {
-				dialogue.Addline("You step into a small separated building that didn't match the other resident homes.");
+				dialogue.AddlineSlow("You step into a small separated building that didn't match the other resident homes.");
 				Sleep(800);
-				dialogue.Addline("As you enter the doorless building, you hear the clank of hammer on steal. ");
+				dialogue.AddlineSlow("As you enter the doorless building, you hear the clank of hammer on steel. ");
 				Sleep(800);
-				dialogue.Addline("A large man with biceps the size of your head is focused on smithing something... a");
-				dialogue.Addline("sword? ");
+				dialogue.AddlineSlow("A large man with biceps the size of your head is focused on smithing something... a");
+				dialogue.AddlineSlow("sword? ");
 				Sleep(1800);
-				dialogue.Addline("It seems that he has just started, so it's hard to discern what it it is that he's");
-				dialogue.Addline("creating. ");
+				dialogue.AddlineSlow("It seems that he has just started, so it's hard to discern what it is that he's");
+				dialogue.AddlineSlow("creating. ");
 				Sleep(1800);
-				dialogue.Addline("He hears your footsteps as you enter the building");
+				dialogue.AddlineSlow("He hears your footsteps as you enter the building");
 				Sleep(1800);
-				dialogue.Addline("BlackSmithy: Aye, mate, ya look lost. You new in town?");
+				dialogue.AddlineSlow("BlackSmithy: Aye, mate, ya look lost. You new in town?");
 				Sleep(1800);
-				dialogue.Addline("(*) You nod your head in confirmation. (*)");
+				dialogue.AddlineSlow("(*) You nod your head in confirmation. (*)");
 				Sleep(1800);
-				dialogue.Addline("Blacksmithy: Well I'm this here village's blacksmith, th' one stop shop for all 'yer");
-				dialogue.Addline("offensive and defensive needs. If ya need anything smithed, I've got th' best quality");
-				dialogue.Addline("steel you'll find.");
+				dialogue.AddlineSlow("Blacksmithy: Well I'm this here village's blacksmith, th' one stop shop for all 'yer");
+				dialogue.AddlineSlow("offensive and defensive needs. If ya need anything smithed, I've got th' best quality");
+				dialogue.AddlineSlow("steel you'll find.");
 				Sleep(1000);
 				player.AddBlacksmith(1);
 			}
 			else {
 				int progress = player.GetBlacksmith();
-				dialogue.Addline("The blacksmith is still hammering away at a weapon when he notices you.");
+				dialogue.AddlineSlow("The blacksmith is still hammering away at a weapon when he notices you.");
 			}
-			dialogue.Addline("Blacksmithy: you lookin' for an upgrade? [Y / N]");
+			dialogue.AddlineSlow("Blacksmithy: you lookin' for an upgrade? ");
+			dialogue.Addline("[Y / N]", false);
 			bool tempBool = CheckYesNo('Y', 'N');
 			if (tempBool == true) {
-				dialogue.Addline("You give a small smile as you admire his handy work and take a look at his current inventory.");
+				dialogue.AddlineSlow("You give a small smile and nod as you admire his handy work. ");
 				dialogue.Addline("[W] for weapons.");
 				dialogue.Addline("[A] for armor.");
 				bool tempBool = CheckYesNo('W', 'A');
 				if (tempBool == true) {
-					dialogue.Addline("Buy a sword for 45 gold pieces? [Y / N]");
+					dialogue.AddlineSlow("Buy a sword for 45 gold pieces? ");
+					dialogue.Addline("[Y / N]", false);
 					tempBool = CheckYesNo('Y', 'N');
 					if (tempBool) {
 						if (player.GetGold() >= 45) {
@@ -955,12 +974,14 @@ void npcInteraction(string name, Player& player, Inventory& inventory, Map& worl
 							done = true;
 						}
 						else {
-							dialogue.Addline("You can't afford that.");
-							done = true;
+							//string tempStr = static_cast<string>(45 - player.GetGold());
+							//dialogue.Addline("Blacksmithy: Sorry mate, you're " + tempStr + " gold pieces short.");
+							dialogue.Addline("Blacksmithy: Sorry mate, you're a bit short in gold for such a piece.");
+							done = false;
 						}
 					}
-					else {
-						dialogue.Addline("OK.");
+					else { // Pushes no, doesn't want to buy an item.
+						dialogue.AddlineSlow("You hear the blacksmithy mutter under his breath \"Your loss...\"");
 						done = true;
 					}
 				}
@@ -1080,3 +1101,4 @@ void PrintGUI(int width, int height, int width2, int height2, int gap) {
 	cout << setw(21) << setfill('_') << "[Information]" << setw(9) << "";
 	cout << setfill(' ');
 }
+
