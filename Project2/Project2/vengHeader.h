@@ -21,7 +21,7 @@ class Dialogue {
 public:
 	Dialogue(int xx1 = 3, int yy1 = 28, int xx2 = 49, int yy2 = 39);
 	void Addline(string text, bool newLine = true);
-	void AddlineSlow(string text, bool newLine = true, int delay = 20);
+	void AddlineSlow(string text, bool newLine = true, int delay = 16);
 	void Print();
 private:
 	int dX1;
@@ -50,7 +50,7 @@ private:
 	int mapWidth[6];
 	int mapHeight[6];
 	char wMap[70][70];    // World
-	char iMap[100][500];    // Intro
+	char iMap[100][100];    // Intro
 	char eMap[70][70];    // Extro
 	char wildMap[70][100]; // Wilderness
 	char tMap[70][70];    // Town

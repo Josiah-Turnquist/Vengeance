@@ -325,7 +325,7 @@ Item* Inventory::GetArmorPtr() {
 Player::Player() {
 	x = 10;
 	y = 27;
-	maxHealth = 80;
+	maxHealth = 32;
 	health = maxHealth;
 	experience = 0;
 	maxExperience = 16;
@@ -378,7 +378,7 @@ void Player::AddHealth(int addH) {
 	if (this->health + addH > this->maxHealth) {
 		this->health = this->maxHealth;
 	}
-	else if (this->health + addH < 0) {
+	else if (this->health + addH < 0) { // Check if player HP < 0
 		//kill();
 	}
 	else {
@@ -441,7 +441,7 @@ void Player::SetMaxExp(int maxExp) {
 }
 
 void Player::LevelUp() {
-	health = health + 5;
+	AddHealth((maxHealth + 5) / 2); // Refill HP halfway.
 	maxHealth = maxHealth + 5;
 
 }
@@ -665,7 +665,7 @@ Map::Map() { // --------------------------------MAP----------------------MAP----
 
 
 	mapWidth[1] = 69;
-	mapHeight[1] = 45;
+	mapHeight[1] = 39;
 	iMap[mapWidth[1]][mapHeight[1]]; // Create iMap based off maxX and maxY.
 	mapSS.clear();
 
@@ -679,6 +679,8 @@ Map::Map() { // --------------------------------MAP----------------------MAP----
 				//iMap[x][y] = ' ';
 			}
 		}
+
+		//iMap[6][10] = 167;
 
 		int tempStr2 = mapIF.peek(); // 
 		if (tempStr2 == EOF) {     // 
@@ -766,7 +768,7 @@ Map::Map() { // --------------------------------MAP----------------------MAP----
 	}
 
 
-	mapWidth[4] = 50;
+	mapWidth[4] = 42;
 	mapHeight[4] = 50;
 	wildMap[mapWidth[4]][mapHeight[4]]; // Create iMap based off maxX and maxY.
 	mapSS.clear();
@@ -963,9 +965,15 @@ void Enemy::Init(string newName, int diff) {
 }
 
 void Enemy::Attack(Player& pl, Dialogue& dia) {
-	int dev = 5;
-	int attackD = rand() % dev;
-	attackD = attackD - pl.GetDef();
+	int devPotential = pl.GetLevel(); // How much player damage will randomize LEVEL CAN ONLY INCREASE DAMAGE, NOT DECREASE.
+	int dev = (rand() % devPotential); // deviation can be between [0, player level]
+	int minPotentialDmg, maxPotentialDmg;
+	minPotentialDmg = pl.GetAtk()*2 - this->def; // These numbers are for % calculation
+	maxPotentialDmg = pl.GetAtk()*2 + devPotential - this->def; // of the min to max hit damage.
+	if (minPotentialDmg < 0) {
+		minPotentialDmg = 0;
+	}
+	int attackD = minPotentialDmg + dev;
 
 	stringstream ss;
 	ss << attackD;
@@ -983,20 +991,28 @@ void Enemy::Attack(Player& pl, Dialogue& dia) {
 }
 
 void Enemy::TakeTurn(Player& pl, Dialogue& dia) {
-	int dev = 5;
-	int attackD = atk + rand() % dev;
-	attackD = attackD - pl.GetDef();
+	int devPotential = 7; // How much enemy damage will randomize
+	int dev = (rand() % devPotential) - 3; // deviation can be between [-3, 4]
+	int minPotentialDmg, maxPotentialDmg;
+	minPotentialDmg = this->atk - 3 - pl.GetDef(); // These numbers are for % calculation
+	maxPotentialDmg = this->atk + 4; // of the min to max hit damage.
+	if (minPotentialDmg < 0) {
+		minPotentialDmg = 0;
+	}
+	int attackD = this->atk + dev; // attack damage = enemy's attack + random deviation
+	attackD = attackD - pl.GetDef(); // Subtracts player defense directly from that damage.
+
 
 	stringstream ss;
 	ss << attackD;
 	string tempStr = ss.str();
 
 	if (attackD <= 0) {
-		dia.Addline("You block " + this->name + "'s attack");
+		dia.Addline("You block " + this->name + "'s attack"); // CHANGE THIS: instead of 0 being a block, it will be a 25/75 change of blocking/dodging versus a low hit of 1-2 damage.
 	}
 	else {
 		pl.AddHealth(-attackD);
-		dia.Addline(this->name + " hits you for " + tempStr + " damage.");
+		dia.Addline(this->name + " hits you for " + tempStr + " damage."); // CHANGE THIS: make it more interactive. Varied messages based on enemy type and damage %.
 	}
 
 	pl.PrintHealth();

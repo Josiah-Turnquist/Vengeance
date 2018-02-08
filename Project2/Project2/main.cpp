@@ -49,10 +49,10 @@ char const TREE = 'T';
 char const PATH = 'P';
 char const RUIN = 'R';
 char const BUSH = 'B';
-int const WORLDFIGHTCHANCE = 400;
-int const WILDFIGHTCHANCE = 100;
-int const DIALOGUEDELAYTIME = 500;
-int const KEYISPRESSED = 0x8000;
+int const WORLDFIGHTCHANCE = 400; // Fight chance in normal world. 1/400 steps will initiate a fight.
+int WILDFIGHTCHANCE = 80; // Fight chance in wilderness. 1/80 steps will initiate a fight. NOT A CONST BECAUSE IT WILL CHANGE WITH DEPTH INTO WILDERNESS.
+int const DIALOGUEDELAYTIME = 500; // Delay time between each dialogue paragraph or sentence.
+int const KEYISPRESSED = 0x8000; // Bitwise operator number to return true or false if ([certain key] & KEYISPRESSED) = true.
 
 int main() {
 	string gameStatus = "MENU";
@@ -202,16 +202,17 @@ int main() {
 				}
 
 				if (enemy.GetName() == "bandit") {
-					dialogue.Addline("A person quickly jumps down from a nearby tree.");
-					dialogue.Addline("You're being attacked by a bandit!");
+					dialogue.Addline("A dark figure slides out from behind a nearby tree.");
+					dialogue.Addline("You're being robbed by a bandit!");
 					dialogue.Addline("He's wielding a cutlass. Be careful! He looks dangerous.");
 				}
 				else if (enemy.GetName() == "cult-member") {
-					dialogue.Addline("From a nearby bush, a hidden figure reveals itself and blocks your path!");
-					dialogue.Addline("You're being attacked by a crazy cult-member!");
-					dialogue.Addline("Sharp nails and teeth and...naked. Seems to be a close combat fighter. Keep your");
-					dialogue.Addline("distance.");
-					dialogue.Addline("Mostly for the nudity.");
+					dialogue.AddlineSlow("You here grunting noises in the distance...they don't sound human", true, 10);
+					dialogue.AddlineSlow("The noises are getting closer, get ready for a fight!", true, 10);
+					dialogue.AddlineSlow("A man comes running out of the bushes covered in bloody scratches and half torn rags.", true, 10);
+					dialogue.AddlineSlow("Sharp nails and teeth...and so little coverage...seems to be a close combat fighter.", true, 10);
+					dialogue.AddlineSlow("Keep your distance! He must be a crazy cult-member from the nearby cave.", true, 10);
+					dialogue.AddlineSlow("...mostly for the nudity.", true, 10);
 				}
 				else if (enemy.GetName() == "animal") {
 					dialogue.Addline("You've been attacked by a wild " + enemy.GetName() + "!");
@@ -221,8 +222,8 @@ int main() {
 				}
 				while (inBattle == true) { // Bandit, animals, cult-member.
 					Sleep(125);
-
-					keyPressed = '~';
+					 //  ----------------CHANGE: Add inititaly FIGHT OR FLIGHT [F]light or [R]un. Higher chances of escape. If fails, initiate fight anyway. "[enemy] is too fast for you, you've been initiated in a fight!"
+					keyPressed = '~'; 
 					while (!(keyPressed == 'A' || keyPressed == 'P' || keyPressed == 'F')) {
 						keyPressed = CheckKeyPressed();
 					}
@@ -230,12 +231,15 @@ int main() {
 					if (keyPressed == 'A') { // Attack
 						enemy.Attack(player, dialogue);
 						if (enemy.GetHealth() <= 0) {
-							int dev = rand() % 2;
+							int dev = rand() % player.GetLevel(); // Deviation increments with level.
 							inBattle = false;
-							player.AddExp((enemy.GetDiff() * 4) + dev);
+
+							int expGain = (enemy.GetDiff() * 2) + dev; // EXPERIENCE gain = (enemy level * 2) + (random deviation based off player level)
+							int moneyGain = (enemy.GetDiff()) + dev; // MONEY gain = (enemy level) + (random deviation based off player level)
+							player.AddExp(expGain);
 							dialogue.Addline("You killed " + enemy.GetName());
-							player.AddGold(5);
-							continue;
+							player.AddGold(moneyGain); 
+							continue; // inBattle is now false, check that and skip the rest of the while loop.
 						}
 					}
 					else if (keyPressed == 'P') { // Potion
@@ -255,7 +259,7 @@ int main() {
 						}
 					}
 					else if (keyPressed == 'F') { // Flee
-						random = rand() % 4;
+						random = rand() % 4; // 25% chance
 						if (random != 1) {
 							inBattle = false;
 							dialogue.Addline("You run away!");
@@ -265,7 +269,7 @@ int main() {
 						}
 					}
 					if (inBattle == true) {
-						enemy.TakeTurn(player, dialogue); // Make sure player hasn't run away beforehand.
+						enemy.TakeTurn(player, dialogue); // Make sure player hasn't run away beforehand enemy hits again.
 					}
 				}
 				PrintInfo(infoSet, player, inventory);
@@ -503,8 +507,8 @@ int main() {
 						tempInt = CheckNumPressed();
 					}
 					dialogue.Addline("Are you sure you want to drop this? You will not get this back. [Y / N]");
-					Sleep(50);
-					tempBool = CheckYesNo('Y', 'N');
+					Sleep(DIALOGUEDELAYTIME);
+					tempBool = CheckYesNo('Y', 'N'); // Check if player pushes Y or N.
 					tempStr = inventory.GetName(tempInt);
 					if (tempBool) {
 						tempBool = inventory.DeleteAtPos(tempInt);
@@ -514,7 +518,7 @@ int main() {
 						}
 					}
 					else {
-						dialogue.Addline("OK.");
+						dialogue.Addline("(*) You realize you're not a very decisive person. (*)");
 					}
 				}
 			}
@@ -828,27 +832,27 @@ void npcInteraction(string name, Player& player, Inventory& inventory, Map& worl
 			//player.SetCook(0);
 			if (progress == 0) {
 				dialogue.Addline("The smell of fresh bread immediately hits your nose as you enter the bakery. ");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("Inside, stands a seemingly aged man... maybe around his fifties? ");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("He's attending to the display of different pastries before he looks up to see you walk in.");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("Cook: Hello there! Haven't seen you around before, you new here?");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("You nod your head and give a small \"yep\" in response.");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("Cook: In that case, pleasure to make your acquaintance! I am the village's cook and");
 				dialogue.Addline("baker, ");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("and I don't mean to boast, but  I sell the tastiest, sweetest food you'll find intown!", false);
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("Cook: Have a look see if you'd like to buy anything!");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				player.AddCook(1);
 			}
 			else {
 				dialogue.Addline("Cook: Have a look see if you'd like to buy anything!");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME * 1.5);
 			}
 			dialogue.Addline("Buy some food for 5 gold apiece? [Y / N]");
 			bool tempBool = CheckYesNo('Y', 'N');
@@ -876,33 +880,33 @@ void npcInteraction(string name, Player& player, Inventory& inventory, Map& worl
 			if (progress == 0) {
 				dialogue.Addline("As you step inside, you are greeted with a man that seems to be within his early");
 				dialogue.Addline("thirties with a smile plastered accross his face.");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("In one hand he holds an Erlenmeyer flask with red liquid inside and in the other a small");
 				dialogue.Addline("stick.");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("that has been just recently stirring said flask.", false);
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("He points to you with his right hand containing the stirring stick and begins to speak");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("with an upbeat voice.");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("Doctor: You look like a new visitor to our humble village! I welcome you.");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("Doctor: I am the local doctor in this village and I specialize in treating all our sick.");
-				Sleep(2000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("Buy a health potion for 25 gold apiece? [Y / N]");
-				Sleep(1000);
+				Sleep(DIALOGUEDELAYTIME * 1.5);
 				player.AddDoc(1);
 			}
 			else {
 				dialogue.Addline("The doc is still at work with his sciencey things and potion mixing. As you approach him,");
 				dialogue.Addline("you greet him with a smile.");
-				Sleep(1000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("Doctor: Welcome back, adventurer! Will you be needing some rejuvenation potions for your");
 				dialogue.Addline("journey?");
-				Sleep(1000);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.Addline("Buy a health potion for 25 gold apiece? [Y / N]");
-				Sleep(1000);
+				Sleep(DIALOGUEDELAYTIME);
 			}
 			bool tempBool = CheckYesNo('Y', 'N');
 			if (tempBool) {
@@ -925,28 +929,30 @@ void npcInteraction(string name, Player& player, Inventory& inventory, Map& worl
 		}
 		else if (name == "blacksmith") {
 			int progress = player.GetBlacksmith();
-			player.SetBlacksmith(0);
+			//player.SetBlacksmith(0);
+			bool stillTalking = true;
+
 			if (progress == 0) {
 				dialogue.AddlineSlow("You step into a small separated building that didn't match the other resident homes.");
-				Sleep(800);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.AddlineSlow("As you enter the doorless building, you hear the clank of hammer on steel. ");
-				Sleep(800);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.AddlineSlow("A large man with biceps the size of your head is focused on smithing something... a");
 				dialogue.AddlineSlow("sword? ");
-				Sleep(1800);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.AddlineSlow("It seems that he has just started, so it's hard to discern what it is that he's");
 				dialogue.AddlineSlow("creating. ");
-				Sleep(1800);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.AddlineSlow("He hears your footsteps as you enter the building");
-				Sleep(1800);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.AddlineSlow("BlackSmithy: Aye, mate, ya look lost. You new in town?");
-				Sleep(1800);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.AddlineSlow("(*) You nod your head in confirmation. (*)");
-				Sleep(1800);
+				Sleep(DIALOGUEDELAYTIME);
 				dialogue.AddlineSlow("Blacksmithy: Well I'm this here village's blacksmith, th' one stop shop for all 'yer");
 				dialogue.AddlineSlow("offensive and defensive needs. If ya need anything smithed, I've got th' best quality");
 				dialogue.AddlineSlow("steel you'll find.");
-				Sleep(1000);
+				Sleep(DIALOGUEDELAYTIME);
 				player.AddBlacksmith(1);
 			}
 			else {
@@ -981,6 +987,7 @@ void npcInteraction(string name, Player& player, Inventory& inventory, Map& worl
 						}
 					}
 					else { // Pushes no, doesn't want to buy an item.
+						dialogue.Addline("(*) You reject his offer (*)");
 						dialogue.AddlineSlow("You hear the blacksmithy mutter under his breath \"Your loss...\"");
 						done = true;
 					}
@@ -998,18 +1005,19 @@ void npcInteraction(string name, Player& player, Inventory& inventory, Map& worl
 							done = true;
 						}
 						else {
-							dialogue.Addline("You can't afford that.");
-							done = true;
+							dialogue.Addline("Blacksmithy: Sorry mate, you're a bit short in gold for such a piece.");
+							done = false;
 						}
 					}
-					else {
-						dialogue.Addline("OK.");
+					else { // Doesn't want to buy chainmail. ADD OPTION TO VIEW INVENTORY AGAIN.
+						dialogue.Addline("(*) You reject his offer (*)");
+						dialogue.AddlineSlow("You hear the blacksmithy mutter under his breath \"Your loss...\"");
 						done = true;
 					}
 				}
-			}
+			} // Not interested in viewing inventory. Perhaps launch dialogue about the cave?
 			else {
-				dialogue.Addline("OK.");
+				dialogue.Addline("Blacksmithy: 'right then. I wish you the best of luck in yer' travels, mate.");
 				done = true;
 			}
 		}
