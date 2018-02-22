@@ -21,6 +21,8 @@ HANDLE consoleCPP = GetStdHandle(STD_OUTPUT_HANDLE); // For use of SetConsoleTex
 COORD CursorPositionCPP;
 CONSOLE_CURSOR_INFO cursorInfoCPP;
 char PLAYERSYMBOL = '-'; // PLAYER SYMBOL
+int const KEYISPRESSED = 0x8000; // Bitwise operator number to return true or false if ([certain key] & KEYISPRESSED) = true.
+
 
 void MoveCursorCPP(int x, int y)
 {
@@ -151,7 +153,7 @@ void Inventory::Replace(int pos, Item* item) {
 }
 
 string Inventory::GetName(int pos) {
-	if (pos < items.size()) {
+	if (pos < (this->items.size())) {
 		return items.at(pos)->GetName(); // 
 	}
 	else {
@@ -544,6 +546,10 @@ void Dialogue::AddlineSlow(string text, bool newLine, int delay) {
 
 	for (int i = 0; i < text.length(); ++i) {
 		Sleep(delay);
+		if (GetKeyState(VK_RETURN) & KEYISPRESSED) {
+			Addline(text.substr(i, text.length()), false);
+			return;
+		}
 		tempStr = text.at(i);
 		Addline(tempStr, false);
 	}
@@ -579,32 +585,104 @@ void Player::Place(int newX, int newY) {
 	return;
 }
 
-void Player::AddDoc(int addTalk) {
-	this->doctor = this->doctor + addTalk;
+void Player::AddDoc(string type, int addAmt) {
+	if (type == "progress") {
+		this->doctor = this->doctor + addAmt;
+	}
+	else if (type == "money") {
+		this->doctor = this->cantAffordAnnoyanceDoc + addAmt;
+	}
+	else if (type == "persistent non-buyer") {
+		this->doctor = this->infrequentBuyerAnnoyanceDoc + addAmt;
+	}
 }
-int Player::GetDoc() {
-	return this->doctor;
+int Player::GetDoc(string type) {
+	if (type == "progress") {
+		return this->doctor;
+	}
+	else if (type == "money") {
+		return this->cantAffordAnnoyanceDoc;
+	}
+	else if (type == "persistent non-buyer") {
+		return this->infrequentBuyerAnnoyanceDoc;
+	}
 }
-void Player::SetDoc(int newTalk) {
-	this->doctor = newTalk;
+void Player::SetDoc(string type, int newAmt) {
+	if (type == "progress") {
+		this->doctor = newAmt;
+	}
+	else if (type == "money") {
+		this->cantAffordAnnoyanceDoc = newAmt;
+	}
+	else if (type == "persistent non-buyer") {
+		this->infrequentBuyerAnnoyanceDoc = newAmt;
+	}
 }
-void Player::AddCook(int addTalk) {
-	this->cook = this->cook + addTalk;
+void Player::AddCook(string type, int addAmt) {
+	if (type == "progress") {
+		this->cook = this->cook + addAmt;
+	}
+	else if (type == "money") {
+		this->cook = this->cantAffordAnnoyanceCook + addAmt;
+	}
+	else if (type == "persistent non-buyer") {
+		this->cook = this->infrequentBuyerAnnoyanceCook + addAmt;
+	}
 }
-int Player::GetCook() {
-	return this->cook;
+int Player::GetCook(string type) {
+	if (type == "progress") {
+		return this->cook;
+	}
+	else if (type == "money") {
+		return this->cantAffordAnnoyanceCook;
+	}
+	else if (type == "persistent non-buyer") {
+		return this->infrequentBuyerAnnoyanceCook;
+	}
 }
-void Player::SetCook(int newTalk) {
-	this->cook = newTalk;
+void Player::SetCook(string type, int newAmt) {
+	if (type == "progress") {
+		this->cook = newAmt;
+	}
+	else if (type == "money") {
+		this->cantAffordAnnoyanceCook = newAmt;
+	}
+	else if (type == "persistent non-buyer") {
+		this->infrequentBuyerAnnoyanceCook = newAmt;
+	}
 }
-void Player::AddBlacksmith(int addTalk) {
-	this->blacksmith = this->blacksmith + addTalk;
+void Player::AddBlacksmith(string type, int addAmt) {
+	if (type == "progress") {
+		this->blacksmith = this->blacksmith + addAmt;
+	}
+	else if (type == "money") {
+		this->blacksmith = this->cantAffordAnnoyanceBlacksmith + addAmt;
+	}
+	else if (type == "persistent non-buyer") {
+		this->blacksmith = this->infrequentBuyerAnnoyanceBlacksmith + addAmt;
+	}
 }
-int Player::GetBlacksmith() {
-	return this->blacksmith;
+int Player::GetBlacksmith(string type) {
+	if (type == "progress") {
+		return this->blacksmith;
+	}
+	else if (type == "money") {
+		return this->cantAffordAnnoyanceBlacksmith;
+	}
+	else if (type == "persistent non-buyer") {
+		return this->infrequentBuyerAnnoyanceBlacksmith;
+	}
 }
-void Player::SetBlacksmith(int newTalk) {
-	this->blacksmith = newTalk;
+void Player::SetBlacksmith(string type, int newAmt) {
+	if (type == "progress") {
+		this->blacksmith = newAmt;
+	}
+	else if (type == "money") {
+		this->cantAffordAnnoyanceBlacksmith = newAmt;
+	}
+	else if (type == "persistent non-buyer") {
+		this->infrequentBuyerAnnoyanceBlacksmith = newAmt;
+	}
 }
 
 bool Player::BossUnlocked() {
@@ -1033,7 +1111,7 @@ string Enemy::GetName() {
 
 NPC::NPC(string initName) {
 	name = initName;
-	progress = 0;
+	//progress = 0;
 }
 
 string NPC::GetName() {

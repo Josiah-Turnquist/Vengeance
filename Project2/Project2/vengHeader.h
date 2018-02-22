@@ -176,15 +176,15 @@ public:
 	void AddAtkGear(int newStat);
 	void AddDefGear(int newStat);
 
-	void AddDoc(int addTalk);
-	int GetDoc();
-	void SetDoc(int newTalk);
-	void AddCook(int addTalk);
-	int GetCook();
-	void SetCook(int newTalk);
-	void AddBlacksmith(int addTalk);
-	int GetBlacksmith();
-	void SetBlacksmith(int newTalk);
+	void AddDoc(string type, int addTalk);
+	int GetDoc(string type);
+	void SetDoc(string type, int newTalk);
+	void AddCook(string type, int addTalk);
+	int GetCook(string type);
+	void SetCook(string type, int newTalk);
+	void AddBlacksmith(string type, int addTalk);
+	int GetBlacksmith(string type);
+	void SetBlacksmith(string type, int newTalk);
 
 	bool BossUnlocked();
 	void BossUnlock();
@@ -212,8 +212,14 @@ private:
 	bool gender; // true = male; false = female
 
 	int doctor;
+	int cantAffordAnnoyanceDoc = 0;
+	int infrequentBuyerAnnoyanceDoc = 0;
 	int cook;
+	int cantAffordAnnoyanceCook = 0;
+	int infrequentBuyerAnnoyanceCook = 0;
 	int blacksmith;
+	int cantAffordAnnoyanceBlacksmith = 0;
+	int infrequentBuyerAnnoyanceBlacksmith = 0;
 
 	bool bossUnlocked;
 };
@@ -243,7 +249,9 @@ private:
 	string name;
 	int x;
 	int y;
-	int progress;
+	//int progress; // 0 means first meet.
+	//int cantAffordAnnoyance = 0;
+	//int infrequentBuyerAnnoyance = 0;
 };
 
 #endif
