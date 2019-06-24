@@ -75,7 +75,7 @@ int main() {
 
 	RECT r;
 	GetWindowRect(consoleWin, &r); //stores the console's current dimensions
-	MoveWindow(consoleWin, r.left, r.top, (windowWidth + infoWidth + hudGap) * 13, (4 + windowHeight + dialogueHeight) * 14, TRUE);
+	MoveWindow(consoleWin, r.left, r.top, (windowWidth + infoWidth + hudGap) * 16, (4 + windowHeight + dialogueHeight) * 18, TRUE);
 
 	GetConsoleCursorInfo(console, &cursorInfo); // Get info then...
 	cursorInfo.bVisible = false;                // Set cursor blinking off.
